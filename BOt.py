@@ -62,7 +62,7 @@ Equipe ABJP RJ Taquara 💙
 """
 
 # Agendar as mensagens
-schedule.every().day.at("14:45").do(schedule_task, MESSAGE)  # Enviar primeira mensagem às 10:00
+schedule.every().day.at("16:50").do(schedule_task, MESSAGE)  # Enviar primeira mensagem às 10:00
 schedule.every().day.at("14:50").do(schedule_task, MESSAGE)  # Enviar segunda mensagem às 14:00
 schedule.every().day.at("14:55").do(schedule_task, MESSAGE)  # Enviar terceira mensagem às 17:00
 schedule.every().day.at("21:00").do(schedule_task, MESSAGE)  # Enviar quarta mensagem às 21:00
