@@ -1,8 +1,7 @@
-import schedule
 from telegram import Bot
 import asyncio
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Definir o fuso horário (exemplo, o horário de Brasília)
 timezone = pytz.timezone("America/Sao_Paulo")
@@ -33,15 +32,6 @@ async def send_message(message):
         else:
             print(f"Mensagem enviada para o chat {chat_id}")
 
-# Função para mensagens programadas
-def schedule_task(message):
-    asyncio.run(send_message(message))
-
-# Função para obter a hora atual no fuso horário especificado
-def get_current_time_in_timezone():
-    now_utc = datetime.now(pytz.utc)  # Hora em UTC
-    return now_utc.astimezone(timezone)  # Converte para o fuso horário desejado
-
 # Mensagem padrão
 MESSAGE = """
 ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
@@ -61,17 +51,14 @@ Contamos com a compreensão de todos e que nos ajudem nessas questões ✌🏻
 Equipe ABJP RJ Taquara 💙
 """
 
-# Agendar as mensagens
-schedule.every().day.at("16:50").do(schedule_task, MESSAGE)  # Enviar primeira mensagem às 10:00
-schedule.every().day.at("14:50").do(schedule_task, MESSAGE)  # Enviar segunda mensagem às 14:00
-schedule.every().day.at("14:55").do(schedule_task, MESSAGE)  # Enviar terceira mensagem às 17:00
-schedule.every().day.at("21:00").do(schedule_task, MESSAGE)  # Enviar quarta mensagem às 21:00
+# Função para calcular o tempo restante até o próximo envio
+def calculate_delay(hour, minute):
+    now = datetime.now(timezone)
+    target_time = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    if target_time < now:
+        target_time += timedelta(days=1)
+    return (target_time - now).total_seconds()
 
-# Loop para executar o agendamento
-async def run_scheduler():
-    while True:
-        schedule.run_pending()
-        await asyncio.sleep(1)
-
-# Executar o agendador
-asyncio.run(run_scheduler())
+# Função assíncrona para agendamento
+async def schedule_messages():
+    schedule_times = [(
